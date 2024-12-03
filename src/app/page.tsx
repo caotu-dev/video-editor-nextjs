@@ -1,9 +1,9 @@
-import VideoEditor from "../components/VideoEditor";
+import VideoEditorContainer from "../components/VideoEditorContainer";
 
 export default function Home() {
   return (
     <div className="App">
-      <VideoEditor />
+      <VideoEditorContainer />
     </div>
   );
 }

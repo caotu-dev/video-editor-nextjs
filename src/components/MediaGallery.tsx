@@ -3,13 +3,11 @@ import { useDropzone } from "react-dropzone";
 
 interface MediaGalleryProps {
   onVideoSelect: (file: File) => void;
-  onImageSelect: (file: File) => void;
   className?: string;
 }
 
 const MediaGallery: React.FC<MediaGalleryProps> = ({
   onVideoSelect,
-  onImageSelect,
   className = "",
 }) => {
   const onDrop = useCallback(
@@ -17,12 +15,10 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({
       acceptedFiles.forEach((file) => {
         if (file.type.startsWith("video/")) {
           onVideoSelect(file);
-        } else if (file.type.startsWith("image/")) {
-          onImageSelect(file);
         }
       });
     },
-    [onVideoSelect, onImageSelect]
+    [onVideoSelect]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -41,6 +37,7 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({
         ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}
         transition-colors duration-200 ease-in-out
         cursor-pointer hover:border-blue-400
+        flex items-center justify-center
         ${className}
       `}
     >
@@ -52,7 +49,7 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({
             : "Drag 'n' drop videos or images here, or click to select files"}
         </p>
         <p className="text-sm text-gray-400 mt-2">
-          Supported formats: MP4, WebM, OGG, PNG, JPG, GIF
+          Supported formats: MP4, WebM, OGG
         </p>
       </div>
     </div>

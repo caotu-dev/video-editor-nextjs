@@ -72,7 +72,8 @@ const VideoCanvas: React.FC<VideoCanvasProps> = ({
     // Calculate height maintaining aspect ratio
     const containerHeight =
       containerWidth *
-      (videoRef.current.videoHeight / videoRef.current.videoWidth);
+        (videoRef.current.videoHeight / videoRef.current.videoWidth) -
+      125;
 
     const aspect = videoRef.current.videoWidth / videoRef.current.videoHeight;
 
