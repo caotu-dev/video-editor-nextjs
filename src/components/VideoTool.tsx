@@ -1,12 +1,16 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useOverlayStore } from "../shared/store/overlay";
-import VideoProcess from "./VideoProcess";
-import VideoDownload from "./VideoDownload";
+import VideoProcess from "./video-tools/VideoProcess";
+import VideoDownload from "./video-tools/VideoDownload";
+import Modal from "@/shared/components/Modal";
+import TextOverlayControls from "./video-tools/TextOverlayControls";
 
 const VideoTool: React.FC = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const addOverlay = useOverlayStore((state) => state.addOverlay);
+
+  const [isTextModalOpen, setIsTextModalOpen] = useState(false);
 
   const handleImageClick = () => {
     imageInputRef.current?.click();
@@ -34,6 +38,21 @@ const VideoTool: React.FC = () => {
     }
   };
 
+  const handleAddText = (text: string, fontSize: number, color: string) => {
+    const newOverlay = {
+      type: "text" as const,
+      id: crypto.randomUUID(),
+      text,
+      fontSize,
+      color,
+      startTime: 0,
+      endTime: 2,
+      position: { x: 0.5, y: 0.5 },
+    };
+    addOverlay(newOverlay);
+    setIsTextModalOpen(false);
+  };
+
   return (
     <div className="p-4 flex flex-col gap-4">
       <input
@@ -51,6 +70,7 @@ const VideoTool: React.FC = () => {
         Insert image
       </button>
       <button
+        onClick={() => setIsTextModalOpen(true)}
         type="button"
         className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
       >
@@ -59,6 +79,14 @@ const VideoTool: React.FC = () => {
 
       <VideoProcess />
       <VideoDownload />
+
+      <Modal
+        title="Insert text"
+        isOpen={isTextModalOpen}
+        setIsOpen={setIsTextModalOpen}
+      >
+        <TextOverlayControls onAddText={handleAddText} />
+      </Modal>
     </div>
   );
 };

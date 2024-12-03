@@ -4,12 +4,15 @@ export interface BaseOverlay {
   startTime: number;
   endTime: number;
   position: { x: number; y: number };
+  size?: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface ImageOverlay extends BaseOverlay {
   type: "image";
   image: string;
-  size: number;
   width: number;
   height: number;
 }

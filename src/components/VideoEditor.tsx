@@ -1,25 +1,16 @@
 "use client";
 import React, { useRef } from "react";
 
-import EditorTimeline from "./EditorTimeline";
-import VideoCanvas from "./VideoCanvas";
-import MediaGallery from "./MediaGallery";
-import { useOverlayStore } from "@/shared/store/overlay";
+import VideoCanvas from "./video/VideoCanvas";
+import MediaGallery from "./video/MediaGallery";
 import { useVideoStore } from "@/shared/store/video";
+import VideoControls from "./video/VideoControls";
 
 const VideoEditor = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { overlays, updateOverlay } = useOverlayStore();
-
-  const {
-    duration,
-    setDuration,
-    currentTime,
-    setCurrentTime,
-    setPreviewUrl,
-    previewUrl,
-  } = useVideoStore();
+  const { setDuration, setCurrentTime, setPreviewUrl, previewUrl } =
+    useVideoStore();
 
   const handleVideoSelect = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -36,13 +27,6 @@ const VideoEditor = () => {
     }
   };
 
-  const handleTimeUpdate = (time: number) => {
-    setCurrentTime(time);
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
-    }
-  };
-
   const handleVideoLoaded = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
@@ -53,13 +37,6 @@ const VideoEditor = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
     }
-  };
-
-  const handleOverlayMove = (
-    index: number,
-    position: { x: number; y: number }
-  ) => {
-    updateOverlay(overlays[index].id, { position });
   };
 
   return (
@@ -74,7 +51,7 @@ const VideoEditor = () => {
 
         {previewUrl && (
           <>
-            <div className="mt-4">
+            <div className="mt-4 relative">
               <video
                 ref={videoRef}
                 className="hidden"
@@ -86,19 +63,11 @@ const VideoEditor = () => {
                 Your browser does not support the video tag.
               </video>
 
-              <VideoCanvas
-                videoRef={videoRef}
-                overlays={overlays}
-                onOverlayMove={handleOverlayMove}
-              />
+              <VideoCanvas videoRef={videoRef} />
 
-              {duration > 0 && (
-                <EditorTimeline
-                  duration={duration}
-                  currentTime={currentTime}
-                  onTimeUpdate={handleTimeUpdate}
-                />
-              )}
+              <div className="hover:opacity-100 z-10 opacity-0 transition-opacity duration-300 mt-4 absolute bottom-0 left-0 right-0">
+                <VideoControls videoRef={videoRef} />
+              </div>
             </div>
           </>
         )}

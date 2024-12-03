@@ -82,17 +82,27 @@ export const useProcessorStore = create<ProcessorState>((set, get) => ({
       let lastOutput = "0:v";
 
       overlays.forEach((overlay, index) => {
-        const x = Math.round((overlay.position.x - 0.5) * videoWidth);
-        const y = Math.round((overlay.position.y - 0.5) * videoHeight);
+        const x = Math.round(overlay.position.x * videoWidth);
+        const y = Math.round(overlay.position.y * videoHeight);
 
         if (overlay.type === "image") {
-          filterComplex += `[${index + 1}:v]scale=${
-            overlay.width * overlay.size
-          }:${overlay.height * overlay.size}[scaled${index}];`;
+          const overlayWidth = overlay.size?.width || 200;
+          const overlayHeight = overlay.size?.height || 200;
+
+          const scaleWidth = Math.round(overlayWidth);
+          const scaleHeight = Math.round(overlayHeight);
+
+          const centeredX = x - scaleWidth / 2;
+          const centeredY = y - scaleHeight / 2;
+
+          filterComplex += `[${
+            index + 1
+          }:v]scale=${scaleWidth}:${scaleHeight}[scaled${index}];`;
+
           if (index === overlays.length - 1) {
-            filterComplex += `[${lastOutput}][scaled${index}]overlay=${x}:${y}:enable='between(t,${overlay.startTime},${overlay.endTime})'[v${index}]`;
+            filterComplex += `[${lastOutput}][scaled${index}]overlay=${centeredX}:${centeredY}:enable='between(t,${overlay.startTime},${overlay.endTime})'[v${index}]`;
           } else {
-            filterComplex += `[${lastOutput}][scaled${index}]overlay=${x}:${y}:enable='between(t,${overlay.startTime},${overlay.endTime})'[v${index}];`;
+            filterComplex += `[${lastOutput}][scaled${index}]overlay=${centeredX}:${centeredY}:enable='between(t,${overlay.startTime},${overlay.endTime})'[v${index}];`;
             lastOutput = `v${index}`;
           }
         }
